@@ -1,6 +1,6 @@
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Task } from '../features/projectSlice';
+import type { Task } from '../features/projectSlice';
 
 interface TaskCardProps {
   task: Task;

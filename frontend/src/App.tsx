@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
-import { DndContext, DragEndEvent, closestCorners } from '@dnd-kit/core';
+import { DndContext, closestCorners, type DragEndEvent } from '@dnd-kit/core';
 import type { RootState } from './store';
 import { setTasks, updateTaskStatus } from './features/projectSlice';
 import { KanbanColumn } from './components/KanbanColumn';

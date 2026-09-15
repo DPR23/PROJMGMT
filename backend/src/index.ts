@@ -90,7 +90,7 @@ import path from 'path';
 const FRONTEND_BUILD_PATH = path.join(__dirname, '../../frontend/dist');
 app.use(express.static(FRONTEND_BUILD_PATH));
 
-app.get('*', (req, res) => {
+app.get('{*path}', (req, res) => {
   res.sendFile(path.join(FRONTEND_BUILD_PATH, 'index.html'));
 });
 

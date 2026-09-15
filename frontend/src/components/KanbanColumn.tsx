@@ -1,5 +1,5 @@
 import { useDroppable } from '@dnd-kit/core';
-import { Task } from '../features/projectSlice';
+import type { Task } from '../features/projectSlice';
 import { TaskCard } from './TaskCard';
 
 interface KanbanColumnProps {
