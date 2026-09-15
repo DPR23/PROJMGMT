@@ -1,23 +1,26 @@
 # Stage 1: Build the frontend
-FROM node:20-alpine AS frontend-builder
+FROM node:20-bookworm-slim AS frontend-builder
 WORKDIR /app/frontend
 COPY frontend/package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY frontend/ ./
 RUN npm run build
 
 # Stage 2: Build the backend
-FROM node:20-alpine AS backend-builder
+FROM node:20-bookworm-slim AS backend-builder
 WORKDIR /app/backend
+# Install openssl for Prisma
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 COPY backend/package*.json ./
-RUN npm install
+RUN npm install --legacy-peer-deps
 COPY backend/ ./
 RUN npx prisma generate
 RUN npm run build
 
 # Stage 3: Production Server
-FROM node:20-alpine
+FROM node:20-bookworm-slim
 WORKDIR /app
+RUN apt-get update && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 # Copy backend
 COPY --from=backend-builder /app/backend/package*.json ./backend/
