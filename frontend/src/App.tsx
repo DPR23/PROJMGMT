@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from './store';
+import type { RootState } from './store';
 import { setTasks, updateTaskStatus } from './features/projectSlice';
 
 // Initialize socket
