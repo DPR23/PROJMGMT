@@ -26,6 +26,46 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
+app.get('/api/projects', async (req, res) => {
+  const projects = await prisma.project.findMany();
+  res.json(projects);
+});
+
+app.post('/api/projects', async (req, res) => {
+  const { name, description, ownerId } = req.body;
+  const project = await prisma.project.create({
+    data: { name, description, ownerId },
+  });
+  res.json(project);
+});
+
+app.get('/api/projects/:projectId/tasks', async (req, res) => {
+  const { projectId } = req.params;
+  const tasks = await prisma.task.findMany({ where: { projectId } });
+  res.json(tasks);
+});
+
+app.post('/api/projects/:projectId/tasks', async (req, res) => {
+  const { projectId } = req.params;
+  const { title, description, status, assigneeId } = req.body;
+  const task = await prisma.task.create({
+    data: { title, description, status, projectId, assigneeId },
+  });
+  io.to(`project_${projectId}`).emit('task_added', task);
+  res.json(task);
+});
+
+app.put('/api/tasks/:taskId', async (req, res) => {
+  const { taskId } = req.params;
+  const { status, title, description } = req.body;
+  const task = await prisma.task.update({
+    where: { id: taskId },
+    data: { status, title, description },
+  });
+  io.to(`project_${task.projectId}`).emit('task_updated', task);
+  res.json(task);
+});
+
 // Socket.io integration
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
