@@ -1,16 +1,21 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { DndContext, closestCorners, type DragEndEvent } from '@dnd-kit/core';
-import { socket } from '../utils/socket';
+import { DndContext, closestCorners, useSensor, useSensors, PointerSensor, TouchSensor, type DragEndEvent } from '@dnd-kit/core';
 import type { RootState } from '../store';
 import { updateTaskStatus, addTask } from '../features/projectSlice';
 import CreateTaskModal from './CreateTaskModal';
 import { KanbanColumn } from './KanbanColumn';
+import { socket } from '../utils/socket';
 
 export function KanbanBoard() {
   const dispatch = useDispatch();
   const tasks = useSelector((state: RootState) => state.project.tasks);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
+  );
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { over } = event;
@@ -50,7 +55,7 @@ export function KanbanBoard() {
         </button>
       </div>
 
-      <DndContext collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
+      <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={handleDragEnd}>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {columns.map(col => (
             <KanbanColumn
