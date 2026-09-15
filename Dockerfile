@@ -28,7 +28,6 @@ COPY --from=backend-builder /app/backend/package*.json ./backend/
 COPY --from=backend-builder /app/backend/node_modules ./backend/node_modules
 COPY --from=backend-builder /app/backend/dist ./backend/dist
 COPY --from=backend-builder /app/backend/prisma ./backend/prisma
-COPY --from=backend-builder /app/backend/dev.db* ./backend/
 
 # Copy frontend build
 COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
