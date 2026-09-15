@@ -15,6 +15,7 @@ COPY backend/package*.json ./
 RUN npm install --legacy-peer-deps
 COPY backend/ ./
 RUN npx prisma generate
+RUN npx prisma db push
 RUN npm run build
 
 # Stage 3: Production Server
