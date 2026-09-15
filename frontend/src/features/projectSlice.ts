@@ -4,7 +4,8 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  status: string; // 'TODO', 'IN_PROGRESS', 'DONE'
+  status: string;
+  priority: string;
 }
 
 export interface ProjectState {
@@ -13,7 +14,20 @@ export interface ProjectState {
 }
 
 const initialState: ProjectState = {
-  tasks: [],
+  tasks: [
+    { id: '1', title: 'Setup React App', description: 'Initialize Vite + React with Tailwind CSS', status: 'DONE', priority: 'High' },
+    { id: '2', title: 'Design Database Schema', description: 'Create Prisma models for Users, Projects, Tasks', status: 'DONE', priority: 'High' },
+    { id: '3', title: 'Build REST API', description: 'Express endpoints for CRUD operations', status: 'IN_PROGRESS', priority: 'High' },
+    { id: '4', title: 'Implement Socket.io', description: 'Real-time updates for task changes', status: 'IN_PROGRESS', priority: 'Medium' },
+    { id: '5', title: 'Kanban Board UI', description: 'Drag and drop task management board', status: 'IN_PROGRESS', priority: 'High' },
+    { id: '6', title: 'User Authentication', description: 'JWT-based login and signup flow', status: 'TODO', priority: 'Urgent' },
+    { id: '7', title: 'File Upload System', description: 'Allow attaching files to tasks', status: 'TODO', priority: 'Medium' },
+    { id: '8', title: 'Gantt Chart View', description: 'Timeline visualization for project planning', status: 'TODO', priority: 'Low' },
+    { id: '9', title: 'Email Notifications', description: 'Send deadline reminders via email', status: 'TODO', priority: 'Low' },
+    { id: '10', title: 'Deploy to Production', description: 'Setup CI/CD and deploy', status: 'TODO', priority: 'Medium' },
+    { id: '11', title: 'Write Unit Tests', description: 'Jest tests for API and components', status: 'IN_PROGRESS', priority: 'Medium' },
+    { id: '12', title: 'Mobile Responsive Design', description: 'Ensure app works on all screen sizes', status: 'TODO', priority: 'Low' },
+  ],
   loading: false,
 };
 
@@ -39,8 +53,11 @@ const projectSlice = createSlice({
         state.tasks[index] = action.payload;
       }
     },
+    deleteTask: (state, action: PayloadAction<string>) => {
+      state.tasks = state.tasks.filter(t => t.id !== action.payload);
+    },
   },
 });
 
-export const { setTasks, addTask, updateTaskStatus, updateTask } = projectSlice.actions;
+export const { setTasks, addTask, updateTaskStatus, updateTask, deleteTask } = projectSlice.actions;
 export default projectSlice.reducer;
