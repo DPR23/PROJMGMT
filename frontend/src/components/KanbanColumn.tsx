@@ -2,37 +2,27 @@ import { useDroppable } from '@dnd-kit/core';
 import type { Task } from '../features/projectSlice';
 import { TaskCard } from './TaskCard';
 
-interface KanbanColumnProps {
+interface ColumnProps {
   id: string;
   title: string;
   tasks: Task[];
-  color: string;
 }
 
-const columnIcons: Record<string, string> = {
-  TODO: '📋',
-  IN_PROGRESS: '🔧',
-  DONE: '✅',
-};
-
-export function KanbanColumn({ id, title, tasks, color }: KanbanColumnProps) {
-  const { setNodeRef, isOver } = useDroppable({
-    id,
-  });
+export function KanbanColumn({ id, title, tasks }: ColumnProps) {
+  const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
     <div
       ref={setNodeRef}
-      className={`rounded-xl p-4 w-80 flex-shrink-0 min-h-[500px] transition-all duration-200 ${
-        isOver ? 'bg-blue-50 ring-2 ring-blue-300' : 'bg-gray-50'
+      className={`rounded-2xl p-5 min-h-[480px] transition-all duration-300 ${
+        isOver
+          ? 'bg-blue-50/60 ring-2 ring-blue-200/60'
+          : 'bg-white/40 backdrop-blur-sm border border-gray-100/60'
       }`}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <span>{columnIcons[id] || '📌'}</span>
-          <h2 className="text-sm font-bold text-gray-700 uppercase tracking-wider">{title}</h2>
-        </div>
-        <span className={`text-xs font-bold px-2.5 py-1 rounded-full text-white ${color}`}>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">{title}</h3>
+        <span className="text-xs font-medium text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
           {tasks.length}
         </span>
       </div>
@@ -41,7 +31,7 @@ export function KanbanColumn({ id, title, tasks, color }: KanbanColumnProps) {
           <TaskCard key={task.id} task={task} />
         ))}
         {tasks.length === 0 && (
-          <div className="text-center py-12 text-gray-400 text-sm border-2 border-dashed border-gray-200 rounded-lg">
+          <div className="text-center py-16 text-gray-300 text-sm font-light border-2 border-dashed border-gray-100 rounded-xl">
             Drop tasks here
           </div>
         )}
