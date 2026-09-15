@@ -67,8 +67,29 @@ app.put('/api/tasks/:taskId', async (req, res) => {
 });
 
 // Socket.io integration
-io.on('connection', (socket) => {
+let activeUsers = 0;
+
+io.on('connection', async (socket) => {
   console.log('User connected:', socket.id);
+  activeUsers++;
+
+  // Increment daily visitor count
+  const today = new Date().toISOString().split('T')[0];
+  try {
+    const dailyVisitor = await prisma.dailyVisitor.upsert({
+      where: { date: today },
+      update: { count: { increment: 1 } },
+      create: { date: today, count: 1 },
+    });
+    
+    // Broadcast live stats to all connected clients
+    io.emit('visitor_update', {
+      activeUsers,
+      todayVisits: dailyVisitor.count
+    });
+  } catch (error) {
+    console.error('Error tracking visitor:', error);
+  }
 
   socket.on('join_project', (projectId) => {
     socket.join(`project_${projectId}`);
@@ -79,8 +100,23 @@ io.on('connection', (socket) => {
     socket.to(`project_${data.projectId}`).emit('task_updated', data);
   });
 
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     console.log('User disconnected:', socket.id);
+    activeUsers = Math.max(0, activeUsers - 1); // Prevent negative
+    
+    // Get latest daily count to broadcast along with updated active users
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const dailyVisitor = await prisma.dailyVisitor.findUnique({
+        where: { date: today }
+      });
+      io.emit('visitor_update', {
+        activeUsers,
+        todayVisits: dailyVisitor?.count || 0
+      });
+    } catch (error) {
+      console.error('Error fetching visitor count on disconnect:', error);
+    }
   });
 });
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { DndContext, closestCorners, type DragEndEvent } from '@dnd-kit/core';
+import { socket } from '../utils/socket';
 import type { RootState } from '../store';
 import { updateTaskStatus, addTask } from '../features/projectSlice';
 import CreateTaskModal from './CreateTaskModal';
@@ -19,6 +20,7 @@ export function KanbanBoard() {
     const task = tasks.find(t => t.id === taskId);
     if (task && task.status !== newStatus) {
       dispatch(updateTaskStatus({ id: taskId, status: newStatus }));
+      socket.emit('task_updated', { id: taskId, status: newStatus, projectId: '1' });
     }
   };
 

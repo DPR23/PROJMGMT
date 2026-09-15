@@ -1,7 +1,20 @@
+import { useEffect, useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
+import { socket } from '../utils/socket';
 
 export default function Layout() {
   const location = useLocation();
+  const [visitors, setVisitors] = useState({ activeUsers: 0, todayVisits: 0 });
+
+  useEffect(() => {
+    socket.on('visitor_update', (data) => {
+      setVisitors(data);
+    });
+    return () => {
+      socket.off('visitor_update');
+    };
+  }, []);
+
   const navItems = [
     { name: 'Dashboard', path: '/', icon: '◐' },
     { name: 'Kanban', path: '/kanban', icon: '▦' },
@@ -39,6 +52,16 @@ export default function Layout() {
             <div>
               <p className="text-sm font-medium text-gray-900">Dishant Rai</p>
               <p className="text-xs text-gray-500">Premium Plan</p>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center justify-between text-xs text-gray-500 bg-gray-50/80 p-3 rounded-xl border border-gray-100/50 shadow-sm backdrop-blur-sm transition-all duration-300">
+            <div className="flex items-center gap-1.5 font-medium">
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
+              {visitors.activeUsers} online
+            </div>
+            <div className="flex items-center gap-1.5 font-medium">
+              <span className="opacity-70">👁️</span>
+              {visitors.todayVisits} today
             </div>
           </div>
         </div>
